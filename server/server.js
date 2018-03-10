@@ -2,9 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { ObjectID } = require('mongodb');
 
-const { mongoose } = require('./db/mongoose');
 const { Todo } = require('./models/todo');
-const { User } = require('./models/user');
+// const { mongoose } = require('./db/mongoose');
+// const { User } = require('./models/user');
 
 const port = 3000;
 

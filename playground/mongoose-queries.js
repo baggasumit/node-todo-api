@@ -1,5 +1,5 @@
-const { mongoose } = require('../server/db/mongoose');
 const { Todo } = require('../server/models/todo');
+// const { mongoose } = require('../server/db/mongoose');
 
 const id = '5aa39bb4e209999756534457';
 
