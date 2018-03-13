@@ -21,7 +21,10 @@ beforeEach((done) => {
     .then(() => {
       return Todo.insertMany(todos);
     })
-    .then(() => done());
+    .then(() => done())
+    .catch((e) => {
+      console.log(e);
+    });
 });
 
 describe('POST /todos', () => {
