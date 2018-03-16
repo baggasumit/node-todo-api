@@ -5,6 +5,7 @@ const { ObjectID } = require('mongodb');
 const { Todo } = require('./models/todo');
 const { mongoose } = require('./db/mongoose'); // eslint-disable-line no-unused-vars
 // const { User } = require('./models/user');
+const { pick } = require('./utils/utils');
 
 const port = process.env.PORT || 3000;
 
@@ -59,6 +60,45 @@ app.delete('/todos/:id', (req, res) => {
     return res.status(404).send({});
   }
   Todo.findByIdAndRemove(id).then(
+    (todo) => {
+      if (!todo) {
+        return res.status(404).send({});
+      }
+      res.send({ todo });
+    },
+    (e) => {
+      res.status(400).send(e);
+    }
+  );
+});
+
+app.patch('/todos/:id', (req, res) => {
+  const { id } = req.params;
+  // console.log('body: ', req.body);
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send({});
+  }
+
+  let updateTodo = pick(req.body, ['text', 'completed']);
+
+  if (
+    typeof updateTodo.completed === 'boolean' &&
+    updateTodo.completed === true
+  ) {
+    updateTodo.completedAt = new Date().getTime();
+  } else if (updateTodo.completed === false) {
+    updateTodo.completedAt = null;
+  }
+
+  Todo.findByIdAndUpdate(
+    id,
+    {
+      $set: updateTodo,
+    },
+    {
+      new: true,
+    }
+  ).then(
     (todo) => {
       if (!todo) {
         return res.status(404).send({});
