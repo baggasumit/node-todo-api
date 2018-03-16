@@ -2,12 +2,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { ObjectID } = require('mongodb');
 
+require('./config/config');
 const { Todo } = require('./models/todo');
 const { mongoose } = require('./db/mongoose'); // eslint-disable-line no-unused-vars
 // const { User } = require('./models/user');
 const { pick } = require('./utils/utils');
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 const app = express();
 app.use(bodyParser.json());
