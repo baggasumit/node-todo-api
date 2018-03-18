@@ -7,6 +7,7 @@ const { Todo } = require('./models/todo');
 const { mongoose } = require('./db/mongoose'); // eslint-disable-line no-unused-vars
 const { User } = require('./models/user');
 const { pick } = require('./utils/utils');
+const { authenticate } = require('./middleware/authenticate');
 
 const port = process.env.PORT;
 
@@ -126,6 +127,10 @@ app.post('/users', (req, res) => {
     .catch((e) => {
       res.status(400).send(e);
     });
+});
+
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user);
 });
 
 app.listen(port, () => {
