@@ -243,3 +243,62 @@ describe('POST /users', () => {
       .end(done);
   });
 });
+
+describe('POST /users/login', () => {
+  it('should login user and return auth token', (done) => {
+    const email = users[0].email;
+    const password = users[0].password;
+
+    request(app)
+      .post('/users/login')
+      .send({ email, password })
+      .expect(200)
+      .expect((res) => {
+        expect(res.headers['x-auth']).toExist();
+        expect(res.body._id).toExist();
+        expect(res.body.email).toBe(email);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+
+        User.findById(users[0]._id)
+          .then((user) => {
+            expect(user.tokens[0]).toInclude({
+              access: 'auth',
+              token: res.headers['x-auth'],
+            });
+            done();
+          })
+          .catch((e) => done(e));
+      });
+  });
+
+  it('should reject invalid login', (done) => {
+    const email = users[1].email;
+    const password = users[1].password + 'xx';
+
+    request(app)
+      .post('/users/login')
+      .send({ email, password })
+      .expect(401)
+      .expect((res) => {
+        expect(res.headers['x-auth']).toNotExist();
+      })
+      .end((err) => {
+        // (err, res)
+        if (err) {
+          return done(err);
+        }
+
+        User.findById(users[1]._id)
+          .then((user) => {
+            // No tokens present already in the DB
+            expect(user.tokens.length).toBe(0);
+            done();
+          })
+          .catch((e) => done(e));
+      });
+  });
+});
